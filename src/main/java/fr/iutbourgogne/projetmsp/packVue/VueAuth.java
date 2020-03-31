@@ -7,6 +7,8 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -37,52 +39,18 @@ public class VueAuth extends JPanel {
         boutonConnexion.addActionListener(new Ecouteur_Connexion());
         boutonConnexion.addMouseListener(new Ecouteur_Connexion());
         boutonConnexion.addMouseMotionListener(new Ecouteur_Connexion());
+        champPseudo.addKeyListener(new Ecouteur_Connexion());
+        champPassword.addKeyListener(new Ecouteur_Connexion());
     }
     
     // Classe interne, interception de la connexion
-    public class Ecouteur_Connexion implements ActionListener, MouseListener, MouseMotionListener {
+    public class Ecouteur_Connexion implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
         
         @Override
         public void actionPerformed(ActionEvent e) {
             
             if (e.getSource() == boutonConnexion){
-                VueAuth.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                ArrayList<String> identifiants = new ArrayList();
-                
-                identifiants.add(champPseudo.getText());
-                identifiants.add(String.valueOf(champPassword.getPassword()));
-              
-                User user1 = UserDAO.findWithLogin(identifiants.get(0));
-                
-                user1.addObservateur((Observateur) SwingUtilities.getWindowAncestor(VueAuth.this));
- 
-                Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
-                
-                // échec
-                if (user1.getLogin().equals("error")) {
-                    personne = user1;
-                    personne.notifyObservateurs("connexionEchec");
-                              
-                    champPseudo.setBorder(borderRed);
-                    champPassword.setBorder(borderRed);
-                   }
-                // succes
-                else if (identifiants.get(0).equals(user1.getLogin()) && 
-                        identifiants.get(1).equals(user1.getPassword())) {
-                    personne = user1;
-                    personne.notifyObservateurs("connexionSuccess");
-                    }
-                // échec
-                else if (identifiants.get(0).equals(user1.getLogin()) && 
-                        !identifiants.get(1).equals(user1.getPassword())){
-                    personne = user1;
-                    personne.notifyObservateurs("connexionEchec");
-                    
-                    champPseudo.setBorder(borderRed);
-                    champPassword.setBorder(borderRed);
-             }   
-                
-                VueAuth.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                connexion();
             }
         }
 
@@ -103,8 +71,56 @@ public class VueAuth extends JPanel {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         }
+        
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                connexion();
+            }
+        }
+
+        @Override public void keyTyped(KeyEvent e) {}
+        @Override public void keyReleased(KeyEvent e) {}
     }
     
+    public void connexion() {
+        VueAuth.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        ArrayList<String> identifiants = new ArrayList();
+
+        identifiants.add(champPseudo.getText());
+        identifiants.add(String.valueOf(champPassword.getPassword()));
+
+        User user1 = UserDAO.findWithLogin(identifiants.get(0));
+
+        user1.addObservateur((Observateur) SwingUtilities.getWindowAncestor(VueAuth.this));
+
+        Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
+
+        // échec
+        if (user1.getLogin().equals("error")) {
+            personne = user1;
+            personne.notifyObservateurs("connexionEchec");
+
+            champPseudo.setBorder(borderRed);
+            champPassword.setBorder(borderRed);
+        } // succes
+        else if (identifiants.get(0).equals(user1.getLogin())
+                && identifiants.get(1).equals(user1.getPassword())) {
+            personne = user1;
+            personne.notifyObservateurs("connexionSuccess");
+        } // échec
+        else if (identifiants.get(0).equals(user1.getLogin())
+                && !identifiants.get(1).equals(user1.getPassword())) {
+            personne = user1;
+            personne.notifyObservateurs("connexionEchec");
+
+            champPseudo.setBorder(borderRed);
+            champPassword.setBorder(borderRed);
+        }
+
+        VueAuth.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+          
     public User getPersonne() {
         return personne;
     }
