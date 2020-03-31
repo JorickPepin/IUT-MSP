@@ -203,10 +203,10 @@ public class VueDetailProjet extends JPanel {
         labelListe1.setText("Liste de vos activités");
         
         labelPrecision1.setHorizontalAlignment(SwingConstants.CENTER);
-        labelPrecision1.setText("Cliquer sur le nom de l'activité pour en voir les détails et la modifier");
+        labelPrecision1.setText("Cliquez sur le nom de l'activité pour en voir les détails et la modifier");
         
         labelPrecision2.setHorizontalAlignment(SwingConstants.CENTER);
-        labelPrecision2.setText("Cliquer sur le nom de l'activité pour en voir les détails");
+        labelPrecision2.setText("Cliquez sur le nom de l'activité pour en voir les détails");
 
         tableauActivites.setModel(new DefaultTableModel(
             new Object [][] {

@@ -159,7 +159,7 @@ public class VueAccueilTechnicien extends JPanel {
         labelListe.setText("Liste des projets");
         
         labelPrecision.setHorizontalAlignment(SwingConstants.CENTER);
-        labelPrecision.setText("Cliquer sur le nom du projet pour voir les activités qu'il contient");
+        labelPrecision.setText("Cliquez sur le nom du projet pour voir les activités qu'il contient");
 
                 tableauProjets.setModel(new DefaultTableModel(
             new Object [][] {
