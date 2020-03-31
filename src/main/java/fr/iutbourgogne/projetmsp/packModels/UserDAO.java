@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import fr.iutbourgogne.projetmsp.packConnexion.ConnectionProvider;
+import fr.iutbourgogne.projetmsp.packVue.VueErrorConnectionDB;
 
 /**
  *
@@ -33,7 +34,7 @@ public class UserDAO {
                 user = new User();
             }
         } catch(SQLException e) {
-            System.out.println("SQL Exception: " + e);
+            VueErrorConnectionDB error = new VueErrorConnectionDB();
         }
         
         if (id != -1) { // si l'utilisateur existe

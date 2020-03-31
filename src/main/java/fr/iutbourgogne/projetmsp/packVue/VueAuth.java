@@ -91,9 +91,9 @@ public class VueAuth extends JPanel {
         identifiants.add(String.valueOf(champPassword.getPassword()));
 
         User user1 = UserDAO.findWithLogin(identifiants.get(0));
-
+        
         user1.addObservateur((Observateur) SwingUtilities.getWindowAncestor(VueAuth.this));
-
+        
         Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
 
         // échec
