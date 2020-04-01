@@ -33,14 +33,8 @@ public class VueAuth extends JPanel {
     
     public VueAuth(User p) {
         this.personne = p;
-        
         initComponents();
-        
-        boutonConnexion.addActionListener(new Ecouteur_Connexion());
-        boutonConnexion.addMouseListener(new Ecouteur_Connexion());
-        boutonConnexion.addMouseMotionListener(new Ecouteur_Connexion());
-        champPseudo.addKeyListener(new Ecouteur_Connexion());
-        champPassword.addKeyListener(new Ecouteur_Connexion());
+        addListener();
     }
     
     // Classe interne, interception de la connexion
@@ -53,12 +47,6 @@ public class VueAuth extends JPanel {
                 connexion();
             }
         }
-
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseDragged(MouseEvent e) {}
-        @Override public void mouseClicked(MouseEvent e) {}
 
         @Override 
         public void mouseExited(MouseEvent e) {
@@ -78,12 +66,21 @@ public class VueAuth extends JPanel {
                 connexion();
             }
         }
-
+        
+        @Override public void mousePressed(MouseEvent e) {}
+        @Override public void mouseReleased(MouseEvent e) {}
+        @Override public void mouseEntered(MouseEvent e) {}
+        @Override public void mouseDragged(MouseEvent e) {}
+        @Override public void mouseClicked(MouseEvent e) {}
         @Override public void keyTyped(KeyEvent e) {}
         @Override public void keyReleased(KeyEvent e) {}
     }
     
-    public void connexion() {
+    
+    /**
+     * Méthode contenant toutes les actions effectuées lorsque l'utilisateur clique sur boutonConnexion
+     */
+    private void connexion() {
         VueAuth.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         ArrayList<String> identifiants = new ArrayList();
 
@@ -120,7 +117,19 @@ public class VueAuth extends JPanel {
 
         VueAuth.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
-          
+
+    /**
+     * Méthode permettant d'ajouter les Listener dans le constructeur
+     */
+    private void addListener() {
+        boutonConnexion.addActionListener(new Ecouteur_Connexion());
+        boutonConnexion.addMouseListener(new Ecouteur_Connexion());
+        boutonConnexion.addMouseMotionListener(new Ecouteur_Connexion());
+        champPseudo.addKeyListener(new Ecouteur_Connexion());
+        champPassword.addKeyListener(new Ecouteur_Connexion());   
+        boutonConnexion.addKeyListener(new Ecouteur_Connexion()); 
+    }
+    
     public User getPersonne() {
         return personne;
     }
