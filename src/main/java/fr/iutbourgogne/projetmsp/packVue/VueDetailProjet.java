@@ -1,9 +1,9 @@
 
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.Activity;
-import fr.iutbourgogne.projetmsp.packModels.ActivityDAO;
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.Activity;
+import fr.iutbourgogne.projetmsp.packModele.ActivityDAO;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,7 +25,8 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
+ * Classe représentant la fenêtre contenant les détails d'un projet
+ * (liste des activités du projet)
  * @author Jorick
  */
 public class VueDetailProjet extends JPanel {
@@ -37,69 +39,104 @@ public class VueDetailProjet extends JPanel {
         this.setPreferredSize(new Dimension(500, 470));
         initComponents();
 
+        // on ajoute les listener
+        addListener();
+        
+        // on affiche le nom du projet
+        labelNom.setText(personne.getProjetEnCours().getNom());
+        
+        // on remplit les deux tableaux
+        remplirTableau1();
+        remplirTableau2();
+    }
+    
+    /**
+     * Méthode permettant de remplir le tableau du haut avec les activités du technicien
+     */
+    private void remplirTableau1() {
+        
+        // variable représentant la ligne du tableau dans laquelle
+        // vont être inscrites les informations de l'activité
+        int j = 0;
+        
+        tableauActivites.getTableHeader().setReorderingAllowed(false);
+        tableauActivites.getTableHeader().setResizingAllowed(false);
+
+        // récupère les activités du projet via la requête SQL
+        ActivityDAO.findActivities(personne.getProjetEnCours());
+
+        // remplissage des colonnes
+        for (Activity i : personne.getProjetEnCours().getActivities()) {
+            if(i.getIdTechnicien() == personne.getId()) {
+                personne.addActivite(i);
+                tableauActivites.setValueAt(i.getResume(), j, 0);
+                tableauActivites.setValueAt(i.getStatut(), j, 1);
+                j += 1;
+            }
+        }
+    }
+    
+    /**
+     * Méthode permettant de remplir le tableau du bas avec les autres activités
+     * du projet qui ne sont pas réalisées par le technicien
+     */
+    private void remplirTableau2() {
+        
+        // variable représentant la ligne du tableau dans laquelle
+        // vont être inscrites les informations de l'activité
+        int j = 0;
+        
+        ArrayList<Activity> listeAutresActivites = new ArrayList();
+        
+        tableauAutresActivites.getTableHeader().setReorderingAllowed(false);
+        tableauAutresActivites.getTableHeader().setResizingAllowed(false);
+
+        // récupère les autres activités du projet via la requête SQL
+        ActivityDAO.findActivities(personne.getProjetEnCours());
+
+        // remplissage des colonnes
+        for (Activity i : personne.getProjetEnCours().getActivities()) {
+            boolean estDedans = false;
+            boolean dejaPresent = false;
+
+            for (Activity a : personne.getListeActivites()) {
+                if (a.getId() == i.getId()) {
+                    estDedans = true;
+                }
+            }
+            
+            for (Activity b : listeAutresActivites) {
+                if (b.getId() == i.getId()) {
+                    dejaPresent = true;
+                }
+            }
+            
+            if (!estDedans && !dejaPresent) {
+                listeAutresActivites.add(i);
+                tableauAutresActivites.setValueAt(i.getResume(), j, 0);
+                tableauAutresActivites.setValueAt(i.getStatut(), j, 1);
+                j += 1;
+            }
+        }
+    }
+
+    /**
+     * Méthode permettant d'ajouter les Listener dans le constructeur
+     */
+    private void addListener() {
         labelRetour.addMouseListener(new Ecouteur_AccesReponse());
         tableauActivites.addMouseListener(new Ecouteur_AccesReponse());
         tableauAutresActivites.addMouseListener(new Ecouteur_AccesReponse());
         tableauActivites.addMouseMotionListener(new Ecouteur_AccesReponse());
         tableauAutresActivites.addMouseMotionListener(new Ecouteur_AccesReponse());
-        
-        labelNom.setText(personne.getProjetEnCours().getNom());
-        
-        remplirTableau1();
-        remplirTableau2();
     }
-    
-    private void remplirTableau1() {
-        
-        int j = 0;
-        
-        tableauActivites.getTableHeader().setReorderingAllowed(false);
-        tableauActivites.getTableHeader().setResizingAllowed(false);
-        
-        // récupère les activités liées au projet via la requête SQL
-        ActivityDAO.findTechnicienActivities(personne, personne.getProjetEnCours());
-        
-        // remplissage des colonnes
-        for (Activity i : personne.getProjetEnCours().getActivities()) {
-            tableauActivites.setValueAt(i.getResume(), j, 0);
-            tableauActivites.setValueAt(i.getStatut(), j, 1);
-            j += 1;
-        } 
-    }
-    
-    private void remplirTableau2() {
-        
-        int j = 0;
-        
-        tableauAutresActivites.getTableHeader().setReorderingAllowed(false);
-        tableauAutresActivites.getTableHeader().setResizingAllowed(false);
-        
-        // récupère les activités liées au projet via la requête SQL
-        ActivityDAO.findActivities(personne.getProjetEnCours());
-        
-        // remplissage des colonnes
-        for (Activity i : personne.getProjetEnCours().getActivities()) {
-            ActivityDAO.findTechnicienActivities(personne, personne.getProjetEnCours());
-                for (Activity a : personne.getProjetEnCours().getActivities()) {   
-                    if (!i.getResume().equals(a.getResume())) {
-                        tableauAutresActivites.setValueAt(i.getResume(), j, 0);
-                        tableauAutresActivites.setValueAt(i.getStatut(), j, 1);
-                        j += 1;
-                    }
-                }
-        } 
-    }
-    
+
     public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener {
         
         @Override
-        public void actionPerformed(ActionEvent e) {} 
-
-        
-        @Override
         public void mouseClicked(MouseEvent e) {
-            ActivityDAO.findActivities(personne.getProjetEnCours());
             
+            // si l'utilisateur clique sur "retour"
             if (e.getSource() == labelRetour) {
                 personne.notifyObservateurs("retour");  
             } 
@@ -135,6 +172,7 @@ public class VueDetailProjet extends JPanel {
             }
         }
     
+        @Override public void actionPerformed(ActionEvent e) {}
         @Override public void mousePressed(MouseEvent e) {}
         @Override public void mouseReleased(MouseEvent e) {}
         @Override public void mouseEntered(MouseEvent e) {}

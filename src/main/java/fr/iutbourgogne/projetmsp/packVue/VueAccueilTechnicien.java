@@ -19,9 +19,9 @@ import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-import fr.iutbourgogne.projetmsp.packModels.User;
-import fr.iutbourgogne.projetmsp.packModels.Projet;
-import fr.iutbourgogne.projetmsp.packModels.ProjetDAO;
+import fr.iutbourgogne.projetmsp.packModele.User;
+import fr.iutbourgogne.projetmsp.packModele.Projet;
+import fr.iutbourgogne.projetmsp.packModele.ProjetDAO;
 
 /**
  *
@@ -56,9 +56,9 @@ public class VueAccueilTechnicien extends JPanel {
         
         // récupère les projets du technicien via la requête SQL
         ProjetDAO.findProjets(personne);
-     
+      
         // remplissage des colonnes
-        for (Projet i : personne.getProjets()) {
+        for (Projet i : personne.getListeProjets()) {
             tableauProjets.setValueAt(i.getNom(), j, 0);
             tableauProjets.setValueAt(i.getDureeEstimee(), j, 1);
             tableauProjets.setValueAt(i.getDureeFinale(), j, 2);
@@ -86,7 +86,7 @@ public class VueAccueilTechnicien extends JPanel {
                 // s'il a cliqué sur la première colonne (nom du projet) et que la cellule n'est pas vide
                 if ((colonne == 0) && (tableauProjets.getValueAt(ligne, 0) != null)) {
                     // on parcourt la liste des projets pour trouver celui qui correspond à celui sur lequel l'utilisateur a cliqué
-                    for (Projet i : personne.getProjets()) { 
+                    for (Projet i : personne.getListeProjets()) { 
                         if (i.getNom().equals((String)(tableauProjets.getValueAt(ligne, 0)))) {
                            personne.setProjetEnCours(i);
                         }

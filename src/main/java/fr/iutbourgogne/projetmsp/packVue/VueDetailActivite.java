@@ -1,7 +1,7 @@
 
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -44,6 +44,11 @@ public class VueDetailActivite extends JPanel {
         
         labelNom.setText(personne.getProjetEnCours().getActiviteEnCours().getResume());
         details.setText(personne.getProjetEnCours().getActiviteEnCours().getDetail());
+        
+        // permet de laisser la fenêtre contenant le détail en haut même si le 
+        // texte dépasse (scroll en haut)
+        details.setCaretPosition(0);
+        
         type.setText(personne.getProjetEnCours().getActiviteEnCours().getType());
         
         remplirDates();
@@ -55,18 +60,16 @@ public class VueDetailActivite extends JPanel {
     
     private void remplirDates() {
         DateFormat mediumDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        
-       if (personne.getProjetEnCours().getActiviteEnCours().getDateDebut() == null) {
+
+        if (personne.getProjetEnCours().getActiviteEnCours().getDateDebut() == null) {
             dateDebut.setText("Non renseignée");
-        }
-        else {
+        } else {
             dateDebut.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateDebut()));
         }
-        
+
         if (personne.getProjetEnCours().getActiviteEnCours().getDateFin() == null) {
             dateFin.setText("Non renseignée");
-        }
-        else {
+        } else {
             dateFin.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateFin()));
         }
     }
@@ -164,10 +167,8 @@ public class VueDetailActivite extends JPanel {
         details.setFont(new Font("Tahoma", 1, 12));
         details.setText("[détail_activité]");
         details.setForeground(Color.GRAY);
-        
         details.setWrapStyleWord(true);
         details.setLineWrap(true);
-        details.setCaretPosition(0);
         details.setEditable(false);
         
         labelType.setFont(new Font("Tahoma", 0, 14)); 

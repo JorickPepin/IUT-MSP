@@ -1,7 +1,7 @@
 
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -25,7 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import fr.iutbourgogne.projetmsp.packModels.ActivityDAO;
+import fr.iutbourgogne.projetmsp.packModele.ActivityDAO;
 import java.util.Calendar;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;

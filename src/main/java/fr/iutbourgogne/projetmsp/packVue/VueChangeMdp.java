@@ -1,7 +1,7 @@
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
-import fr.iutbourgogne.projetmsp.packModels.UserDAO;
+import fr.iutbourgogne.projetmsp.packModele.User;
+import fr.iutbourgogne.projetmsp.packModele.UserDAO;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -94,6 +94,7 @@ public class VueChangeMdp extends JPanel {
                         personne = UserDAO.updateMdp(String.valueOf(champNouveauMdp.getPassword()), personne);
                         personne.notifyObservateurs("changeMdpSuccess");
                         initChamps();
+                        personne.notifyObservateurs("retour");
                     } else {
                         personne.notifyObservateurs("changeMdpEchec4");
                         initChamps();

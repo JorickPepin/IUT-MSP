@@ -1,7 +1,7 @@
 
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -41,6 +41,11 @@ public class VueDetailActiviteLecture extends JPanel {
         
         labelNom.setText(personne.getProjetEnCours().getActiviteEnCours().getResume());
         details.setText(personne.getProjetEnCours().getActiviteEnCours().getDetail());
+        
+        // permet de laisser la fenêtre contenant le détail en haut même si le 
+        // texte dépasse (scroll en haut)
+        details.setCaretPosition(0);
+        
         type.setText(personne.getProjetEnCours().getActiviteEnCours().getType());
         
         remplirDates();

@@ -1,6 +1,6 @@
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 

@@ -1,6 +1,6 @@
 package fr.iutbourgogne.projetmsp.main;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import fr.iutbourgogne.projetmsp.packVue.Fenetre;
 
 /**

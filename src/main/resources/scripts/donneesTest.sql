@@ -36,7 +36,8 @@ values(1,'pmartin','746F746F','technicien'),
 (30,'amaigne','','client'),
 (31,'ljamot2','','client'),
 (32,'grond','','client'),
-(33,'apopier','','client');
+(33,'apopier','','client'),
+(34,'tcoulon','compta','technicien');
 
 delete from compétence;
 insert into compétence values (1,'développement C/C++/C#'),
@@ -58,7 +59,8 @@ insert into  technicien values (1,'Martin','Pierre',30,'junior',1),
 (7,'Nzilla','Godefroy',30,'junior',7),
 (8,'Demongeot','Benoit',50,'partner',8),
 (9,'Couston','Jasmine',30,'junior',9),
-(10,'Pieux','Fabien',30,'junior',10);
+(10,'Pieux','Fabien',30,'junior',10),
+(34,'Coulon','Thomas',30,'junior',34);
 
 delete from activité_type;
 insert into activité_type values 
@@ -67,7 +69,10 @@ insert into activité_type values
 (3,'maintenance'),
 (4,'solution innovante'),
 (5, 'migration'),
-(6, 'service après vente');
+(6, 'service après vente'),
+(7, 'organisation'),
+(8, 'correction'),
+(9, 'communciation');
 
 delete from commercial;
 insert into  commercial values 
@@ -122,8 +127,11 @@ delete from projet;
  (9,1,'WoW',40000,NULL , 'en cours'),
   (10,1,'smart city',500, 750, 'fini'),
  (11,2,'site vitrine IUP',50, NULL, 'en attente'),
- (12,3,'innov''Dijon',1400,NULL , 'en cours')
- ;
+ (12,3,'innov''Dijon',1400,NULL , 'en cours'),
+(13, 3, 'Examen S1', 1000, 1300, 'fini'),
+(14, 3, 'Examen S2', 1000, NULL, 'annulé'),
+(15, 3, 'Examen S3', 1000, NULL, 'en attente'),
+(16, 3, 'Serious Game', 800, NULL, 'en cours');
  
  
  delete from devis;
@@ -206,8 +214,22 @@ insert into activité values
 (2, 350,'solution techinque innovante','du mistral','terminée',2, null, null),
 (3,0,'révolution numérique','asimov avait raison','en cours',4, null, null),
 (4,10,'optimisation de l''existant', 'pas de sous','prévue',5, null, null),
-(5,25,'intelligence artificielle','Au royaume des aveugles','annulée',3, null, null)
-;
+(5,25,'intelligence artificielle','Au royaume des aveugles','annulée',3, null, null),
+(6, "50", "Préparation du sujet", "Préparation du sujet d'examen", "terminée", 7, "2019-10-05", "2019-10-10"),
+(7, "100", "Correction", "Correction des copies de l'examen du premier semestre", "terminée", 8, "2019-12-03", "2019-12-15"),
+(8, "10", "Impression", "Impression des copies de l'examen du premier semestre", "terminée", 7, "2019-10-18", "2019-10-18"),
+(9, "30", "Saisie des notes", "Saisie des notes de l'examen sur OGE", "terminée", 8, "2019-12-17", "2019-12-17"),
+(10, "50", "Préparation du sujet", "", "annulée", 7, null, null),
+(11, "100", "Correction", "Correction des copies de l'examen du deuxième semestre", "annulée", 8, null, null),
+(12, "10", "Impression", "Impression des copies de l'examen du deuxième semestre", "annulée", 7, null, null),
+(13, "30", "Saisie des notes", "Saisie des notes de l'examen sur OGE", "annulée", 8, null, null),
+(14, "50", "Préparation du sujet", "", "prévue", 7, null, null),
+(15, "100", "Correction", "", "prévue", 8, null, null),
+(16, "10", "Impression", "Impression des copies de l'examen du troisième semestre", "prévue", 7, null, null),
+(17, "30", "Saisie des notes", "Saisie des notes de l'examen sur OGE", "prévue", 8, null, null),
+(18, "10", "Communication", "Envoyer un mail aux étudiants pour leur rappeler la tenue du jeu malgré le confinement", "prévue", 9, null, null),
+(19, "50", "Organisation", "", "en cours", 7, "2020-04-11", null),
+(20, "20", "Administratif", "Voir avec l'administration pour fixer l'emploi du temps", "terminée", 7, "2020-04-10", "2020-04-10");
 
 delete from affecté;
 insert into affecté values
@@ -220,7 +242,22 @@ insert into affecté values
 (9,4),
 (6,4),
 (10,1),
-(2,1)
+(2,1),
+(34,6),
+(34,7),
+(1,8),
+(1,9),
+(34,10),
+(34,11),
+(1,12),
+(1,13),
+(34,14),
+(34,15),
+(1,16),
+(1,17),
+(34,18),
+(34,19),
+(34,20)
 ;
 
 delete from compose;
@@ -239,7 +276,22 @@ insert into compose values
 (1, 2),
 (1,3),
 (1,4),
-(7,4)
+(7,4),
+(13,6),
+(13,7),
+(13,8),
+(13,9),
+(14,10),
+(14,11),
+(14,12),
+(14,13),
+(15,14),
+(15,15),
+(15,16),
+(15,17),
+(16,18),
+(16,19),
+(16,20)
 ;
 
 

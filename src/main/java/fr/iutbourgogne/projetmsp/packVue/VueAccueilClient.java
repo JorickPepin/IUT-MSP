@@ -1,6 +1,6 @@
 package fr.iutbourgogne.projetmsp.packVue;
 
-import fr.iutbourgogne.projetmsp.packModels.User;
+import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

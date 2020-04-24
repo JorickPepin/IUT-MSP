@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Activité` (
   `ID` INT NOT NULL,
   `duréePrévue` INT,
   `résumé` varchar(45),
-   `détail` varchar(45),
+   `détail` longtext,
   `statut` varchar(45) ,
   `IDType` int,
   `dateDébut` date default null,
