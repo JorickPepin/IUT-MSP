@@ -27,76 +27,102 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 /**
- *
+ * Classe représentant la vue détaillant une activité lorsque
+ * le technicien est en charge de celle-ci (il peut la modifier)
+ * 
  * @author Jorick
  */
 public class VueDetailActivite extends JPanel {
     
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
     
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur
+     */
     public VueDetailActivite(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 400));
+        
+        // ajout des composants
         initComponents();
         
-        labelRetour.addMouseListener(new Ecouteur_AccesReponse());
+        // ajout des listener
+        addListener();
         
+        // on affiche le nom de l'activité
         labelNom.setText(personne.getProjetEnCours().getActiviteEnCours().getResume());
+        
+        // on affiche le détail de l'activité
         details.setText(personne.getProjetEnCours().getActiviteEnCours().getDetail());
         
         // permet de laisser la fenêtre contenant le détail en haut même si le 
         // texte dépasse (scroll en haut)
         details.setCaretPosition(0);
         
+        // on affiche le type de l'activité
         type.setText(personne.getProjetEnCours().getActiviteEnCours().getType());
         
+        // on remplit les cadres contenant les dates
         remplirDates();
-        
-        boutonModification.addActionListener(new Ecouteur_AccesReponse()); 
-        boutonModification.addMouseListener(new Ecouteur_AccesReponse());
-        boutonModification.addMouseMotionListener(new Ecouteur_AccesReponse());
     }
     
+    /**
+     * Méthode permettant de remplir les cadres contenant les dates
+     */
     private void remplirDates() {
         DateFormat mediumDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
+        // si la date n'est pas renseignée dans la bdd
         if (personne.getProjetEnCours().getActiviteEnCours().getDateDebut() == null) {
+            
+            // on affiche "non renseignée"
             dateDebut.setText("Non renseignée");
+            
+        // sinon on affiche la date
         } else {
             dateDebut.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateDebut()));
         }
-
+        
+        // si la date n'est pas renseignée dans la bdd
         if (personne.getProjetEnCours().getActiviteEnCours().getDateFin() == null) {
+            
+            // on affiche "non renseignée"
             dateFin.setText("Non renseignée");
+            
+        // sinon on affiche la date
         } else {
             dateFin.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateFin()));
         }
     }
     
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener {
+    private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener {
         
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == boutonModification){
-                    VueDetailActivite.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            
+            // si l'utilisateur clique sur "modifier"
+            if (e.getSource() == boutonModification) {
+                VueDetailActivite.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-                    personne.notifyObservateurs("ouvreModificationActivite");
+                personne.notifyObservateurs("ouvreModificationActivite");
             }
-        } 
+        }
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            
+            // si l'utilisateur clique sur "retour"
             if (e.getSource() == labelRetour) {
                 personne.notifyObservateurs("retourProjet");  
             } 
         }
     
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseDragged(MouseEvent e) {}
-        
         @Override 
         public void mouseExited(MouseEvent e) {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -108,11 +134,25 @@ public class VueDetailActivite extends JPanel {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         }
+        
+        @Override public void mousePressed(MouseEvent e) {}
+        @Override public void mouseReleased(MouseEvent e) {}
+        @Override public void mouseEntered(MouseEvent e) {}
+        @Override public void mouseDragged(MouseEvent e) {}
     }
     
-    @SuppressWarnings("unchecked")
+    /**
+     * Méthode permettant d'ajouter les listener dans le constructeur
+     */
+    private void addListener() {
+        labelRetour.addMouseListener(new Ecouteur());
+        boutonModification.addActionListener(new Ecouteur()); 
+        boutonModification.addMouseListener(new Ecouteur());
+        boutonModification.addMouseMotionListener(new Ecouteur());
+    }
+    
     private void initComponents() {
-
+        
         boutonModification = new JButton();
         labelImageBas = new JLabel();
         labelTitre = new JLabel();
@@ -220,7 +260,7 @@ public class VueDetailActivite extends JPanel {
         jRadioButtonTerminee.setEnabled(false);
         jRadioButtonAnnulee.setEnabled(false);
         
-        
+        // on selectionne le bouton radio suivant le statut de l'activité
         switch (personne.getProjetEnCours().getActiviteEnCours().getStatut()) {
             case "prévue":
                 jRadioButtonPrevue.setSelected(true);

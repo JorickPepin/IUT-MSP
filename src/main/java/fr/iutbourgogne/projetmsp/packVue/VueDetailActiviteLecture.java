@@ -24,69 +24,99 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 /**
- *
+ * Classe représentant la vue détaillant une activité lorsque
+ * le technicien n'est pas en charge de celle-ci 
+ * (il ne peut pas la modifier = lecture seulement)
+ * 
  * @author Jorick
  */
 public class VueDetailActiviteLecture extends JPanel {
     
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
     
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur
+     */
     public VueDetailActiviteLecture(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 350));
+        
+        // ajout des composants
         initComponents();
         
-        labelRetour.addMouseListener(new Ecouteur_AccesReponse());
+        // ajout du listener
+        labelRetour.addMouseListener(new Ecouteur());
         
+        // on affiche le nom de l'activité
         labelNom.setText(personne.getProjetEnCours().getActiviteEnCours().getResume());
+        
+        // on affiche le détail de l'activité
         details.setText(personne.getProjetEnCours().getActiviteEnCours().getDetail());
         
         // permet de laisser la fenêtre contenant le détail en haut même si le 
         // texte dépasse (scroll en haut)
         details.setCaretPosition(0);
         
+        // on affiche le type de l'activité
         type.setText(personne.getProjetEnCours().getActiviteEnCours().getType());
         
+        // on remplit les cadres contenant les dates
         remplirDates();
     }
     
+    /**
+     * Méthode permettant de remplir les cadres contenant les dates
+     */
     private void remplirDates() {
         DateFormat mediumDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        
+        // si la date n'est pas renseignée dans la bdd
         if (personne.getProjetEnCours().getActiviteEnCours().getDateDebut() == null) {
+            
+            // on affiche "non renseignée"
             dateDebut.setText("Non renseignée");
-        }
-        else {
+            
+        // sinon on affiche la date
+        } else {
             dateDebut.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateDebut()));
         }
-        
+
+        // si la date n'est pas renseignée dans la bdd
         if (personne.getProjetEnCours().getActiviteEnCours().getDateFin() == null) {
+            
+            // on affiche "non renseignée"
             dateFin.setText("Non renseignée");
-        }
-        else {
+        
+        // sinon on affiche la date
+        } else {
             dateFin.setText(mediumDateFormat.format(personne.getProjetEnCours().getActiviteEnCours().getDateFin()));
         }
     }
     
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener {
+    private class Ecouteur implements ActionListener, MouseListener {
         
         @Override
-        public void actionPerformed(ActionEvent e) {} 
-
-        @Override
         public void mouseClicked(MouseEvent e) {
+            
+            // si l'utilisateur clique sur "retour"
             if (e.getSource() == labelRetour) {
                 personne.notifyObservateurs("retourProjet");  
             } 
         }
-    
+        
+        @Override public void actionPerformed(ActionEvent e) {} 
         @Override public void mousePressed(MouseEvent e) {}
         @Override public void mouseReleased(MouseEvent e) {}
         @Override public void mouseEntered(MouseEvent e) {}
         @Override public void mouseExited(MouseEvent e) {} 
-}
+    }
  
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -194,6 +224,7 @@ public class VueDetailActiviteLecture extends JPanel {
         jRadioButtonTerminee.setEnabled(false);
         jRadioButtonAnnulee.setEnabled(false);
         
+        // on selectionne le bouton radio suivant le statut de l'activité
         switch (personne.getProjetEnCours().getActiviteEnCours().getStatut()) {
             case "prévue":
                 jRadioButtonPrevue.setSelected(true);

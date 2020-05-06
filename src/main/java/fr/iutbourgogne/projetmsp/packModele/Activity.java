@@ -2,24 +2,65 @@
 package fr.iutbourgogne.projetmsp.packModele;
 
 import java.sql.Date;
-import java.util.ArrayList;
-
 
 /**
- *
+ * Classe représentant une activité d'un projet
+ * 
  * @author Jorick
  */
 public class Activity {
     
+    /**
+     * Attribut correspondant à l'id de l'activité dans la bdd
+     */
     private int id;
+    
+    /**
+     * Attribut représentant le type de l'activité dans la bdd
+     */
     private String type;
+    
+    /**
+     * Attribut représentant le résumé de l'activité
+     */
     private String resume;
+    
+    /**
+     * Attribut représentant le statut de l'activité
+     */
     private String statut;
+    
+    /**
+     * Attribut représentant le détail de l'activité
+     */
     private String detail;
+    
+    /**
+     * Attribut représentant la date de commencement de l'activité
+     */
     private Date dateDebut;
+    
+    /**
+     * Attribut représentant la date de fin de l'activité
+     */
     private Date dateFin;
+    
+    /**
+     * Attribut représentant l'id du technicien qui est chargé de l'activité
+     */
     private int idTechnicien;
     
+    /**
+     * Constructeur de l'activité
+     * @param id
+     * @param type
+     * @param resume
+     * @param statut
+     * @param detail
+     * @param dateDebut
+     * @param dateFin
+     * @param idTechnicien 
+     */
     public Activity(int id, String type, String resume, String statut, String detail, Date dateDebut, Date dateFin, int idTechnicien) {
         this.id = id;
         this.type = type;

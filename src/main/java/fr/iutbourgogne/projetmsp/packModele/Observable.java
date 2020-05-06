@@ -5,7 +5,8 @@ import fr.iutbourgogne.projetmsp.packVue.Observateur;
 
 
 /**
- *
+ * Interface permettant de notifier la classe Fenêtre afin de lancer 
+ * les vues demandées
  * @author Jorick
  */
 public interface Observable {

@@ -16,27 +16,39 @@ import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.border.Border;
 
 /**
- *
+ * Classe représentant la vue de changement de passe
+ * 
  * @author Jorick
  */
 public class VueChangeMdp extends JPanel {
 
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
 
     public VueChangeMdp(User p) {
         this.personne = p;
+        
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 300));
+        
+        // ajout des composants
         initComponents();
+        
+        // ajout des listener
         addListener();
     }
 
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
+    // classe interne
+    private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -84,38 +96,62 @@ public class VueChangeMdp extends JPanel {
      */
     private void changementMdp() {
 
+        // création de la bordure rouge pour l'appliquer lorsque nécessaire
         Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
         
         VueChangeMdp.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        if (champAncienMdp.getPassword().length != 0 && champNouveauMdp.getPassword().length != 0 && champValidationNouveauMdp.getPassword().length != 0) { // si aucun des champs ne sont vides
-            if (String.valueOf(champAncienMdp.getPassword()).equals(personne.getPassword())) { // si le mot de passe rentré correspond au mot de passe actuel
-                if (String.valueOf(champNouveauMdp.getPassword()).equals(String.valueOf(champValidationNouveauMdp.getPassword()))) { // si le nouveau mot de passe et le mot de passe de validation sont identiques
-                    if (String.valueOf(champNouveauMdp.getPassword()).length() > 3) { // si le nouveau mot de passe fait au moins 4 caractères (valeur basse pour faciliter le test mais modifiable)    
+        
+        // si tous les champs sont remplis
+        if (champAncienMdp.getPassword().length != 0 && champNouveauMdp.getPassword().length != 0 
+                && champValidationNouveauMdp.getPassword().length != 0) { 
+            
+            // si le mot de passe rentré correspond au mot de passe actuel
+            if (String.valueOf(champAncienMdp.getPassword()).equals(personne.getPassword())) { 
+                
+                // si le nouveau mot de passe et le mot de passe de validation sont identiques
+                if (String.valueOf(champNouveauMdp.getPassword()).equals(String.valueOf(champValidationNouveauMdp.getPassword()))) { 
+                    
+                    // si le nouveau mot de passe fait au moins 4 caractères (valeur basse pour faciliter les tests mais modifiable)  
+                    if (String.valueOf(champNouveauMdp.getPassword()).length() > 3) {   
+                        
+                        // on met à jour le mot de passe
                         personne = UserDAO.updateMdp(String.valueOf(champNouveauMdp.getPassword()), personne);
-                        personne.notifyObservateurs("changeMdpSuccess");
+                        
+                        // fenêtre pour avertir du changement
+                        JOptionPane.showMessageDialog(null, "Le mot de passe a été modifié.", "Informations correctes", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        // on remet les bordures comme elles sont d'origine (pour enlever les bordures rouges potentielles)
                         initChamps();
+                        
+                        // on retourne à l'accueil
                         personne.notifyObservateurs("retour");
-                    } else {
-                        personne.notifyObservateurs("changeMdpEchec4");
+                        
+                    } else { // le mot de passe fait moins de 4 caractères
+                        JOptionPane.showMessageDialog(null, "Le mot de passe doit être composé de 4 caractères au minimum.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
                         initChamps();
                         champNouveauMdp.setBorder(borderRed);
                         champValidationNouveauMdp.setBorder(borderRed);
                     }
-                } else {
-                    personne.notifyObservateurs("changeMdpEchec2");
+                    
+                } else { // les deux mots de passe à entrer pour valider ne sont pas identiques
+                    JOptionPane.showMessageDialog(null, "Les mots de passe entrés sont différents.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
                     initChamps();
                     champNouveauMdp.setBorder(borderRed);
                     champValidationNouveauMdp.setBorder(borderRed);
                 }
-            } else {
-                personne.notifyObservateurs("changeMdpEchec");
+                
+            } else { // le mot de passe entrer ne correspond pas au mot de passe actuel
+                JOptionPane.showMessageDialog(null, "Le mot de passe entré ne correspond pas au mot de passe actuel.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
                 initChamps();
                 champAncienMdp.setBorder(borderRed);
             }
-        } else {
-            personne.notifyObservateurs("changeMdpEchec3");
+            
+        } else { // tous les champs n'ont pas été remplis
+            JOptionPane.showMessageDialog(null, "Tous les champs ne sont pas remplis.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
             initChamps();
 
+            // on teste pour savoir quels sont les champs vides
+            // pour mettre les bordures en rouge
             if (champAncienMdp.getPassword().length == 0) {
                 champAncienMdp.setBorder(borderRed);
             }
@@ -126,6 +162,7 @@ public class VueChangeMdp extends JPanel {
                 champValidationNouveauMdp.setBorder(borderRed);
             }
         }
+        
         VueChangeMdp.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
     
@@ -143,17 +180,16 @@ public class VueChangeMdp extends JPanel {
      * Méthode permettant d'ajouter les Listener dans le constructeur
      */
     private void addListener() {
-        labelRetour.addMouseListener(new Ecouteur_AccesReponse());
-        boutonValidation.addActionListener(new Ecouteur_AccesReponse());
-        boutonValidation.addMouseListener(new Ecouteur_AccesReponse());
-        boutonValidation.addMouseMotionListener(new Ecouteur_AccesReponse());
-        champAncienMdp.addKeyListener(new Ecouteur_AccesReponse());
-        champNouveauMdp.addKeyListener(new Ecouteur_AccesReponse());
-        champValidationNouveauMdp.addKeyListener(new Ecouteur_AccesReponse());   
-        boutonValidation.addKeyListener(new Ecouteur_AccesReponse()); 
+        labelRetour.addMouseListener(new Ecouteur());
+        boutonValidation.addActionListener(new Ecouteur());
+        boutonValidation.addMouseListener(new Ecouteur());
+        boutonValidation.addMouseMotionListener(new Ecouteur());
+        champAncienMdp.addKeyListener(new Ecouteur());
+        champNouveauMdp.addKeyListener(new Ecouteur());
+        champValidationNouveauMdp.addKeyListener(new Ecouteur());   
+        boutonValidation.addKeyListener(new Ecouteur()); 
     }
     
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         boutonValidation = new JButton();

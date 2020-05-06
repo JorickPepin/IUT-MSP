@@ -27,16 +27,27 @@ import javax.swing.table.DefaultTableModel;
 /**
  * Classe représentant la fenêtre contenant les détails d'un projet
  * (liste des activités du projet)
+ * 
  * @author Jorick
  */
 public class VueDetailProjet extends JPanel {
     
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
     
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur 
+     */
     public VueDetailProjet(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 470));
+        
+        // ajout des composants
         initComponents();
 
         // on ajoute les listener
@@ -45,8 +56,10 @@ public class VueDetailProjet extends JPanel {
         // on affiche le nom du projet
         labelNom.setText(personne.getProjetEnCours().getNom());
         
-        // on remplit les deux tableaux
+        // on remplit le tableau du haut contenant les activités du technicien
         remplirTableau1();
+        
+        // on remplit le tableau du bas contenant les autres activités du projet
         remplirTableau2();
     }
     
@@ -86,6 +99,7 @@ public class VueDetailProjet extends JPanel {
         // vont être inscrites les informations de l'activité
         int j = 0;
         
+        // liste contenant les autres activités du projet
         ArrayList<Activity> listeAutresActivites = new ArrayList();
         
         tableauAutresActivites.getTableHeader().setReorderingAllowed(false);
@@ -94,27 +108,47 @@ public class VueDetailProjet extends JPanel {
         // récupère les autres activités du projet via la requête SQL
         ActivityDAO.findActivities(personne.getProjetEnCours());
 
-        // remplissage des colonnes
+        // on balaye les activités du projet
         for (Activity i : personne.getProjetEnCours().getActivities()) {
+            
+            // booleen permettant de savoir si une activité est déjà présente dans le tableau du haut
             boolean estDedans = false;
+            
+            
             boolean dejaPresent = false;
 
+            // on balaye les activités du technicien
             for (Activity a : personne.getListeActivites()) {
+                
+                // si les deux activités sont les mêmes
                 if (a.getId() == i.getId()) {
+                    
+                    // l'activité est déjà dans le tableau du haut
                     estDedans = true;
                 }
             }
             
+            // on balaye également le tableau du bas pour voir si l'activité n'a pas déjà été inscrite
+            // car la même activité peut se retrouver écrite plusieurs si elle est affectée à plusieurs techniciens
             for (Activity b : listeAutresActivites) {
+                
+                // si l'activité est déjà présente
                 if (b.getId() == i.getId()) {
                     dejaPresent = true;
                 }
             }
             
+            // si elle n'est pas dans le tableau du haut et déjà inscrite dans celui du bas
             if (!estDedans && !dejaPresent) {
+                
+                // on l'ajoute à la liste pour les tests
                 listeAutresActivites.add(i);
+                
+                // on remplit les colonnes
                 tableauAutresActivites.setValueAt(i.getResume(), j, 0);
                 tableauAutresActivites.setValueAt(i.getStatut(), j, 1);
+                
+                // on passe à la ligne suivante
                 j += 1;
             }
         }
@@ -124,14 +158,15 @@ public class VueDetailProjet extends JPanel {
      * Méthode permettant d'ajouter les Listener dans le constructeur
      */
     private void addListener() {
-        labelRetour.addMouseListener(new Ecouteur_AccesReponse());
-        tableauActivites.addMouseListener(new Ecouteur_AccesReponse());
-        tableauAutresActivites.addMouseListener(new Ecouteur_AccesReponse());
-        tableauActivites.addMouseMotionListener(new Ecouteur_AccesReponse());
-        tableauAutresActivites.addMouseMotionListener(new Ecouteur_AccesReponse());
+        labelRetour.addMouseListener(new Ecouteur());
+        tableauActivites.addMouseListener(new Ecouteur());
+        tableauAutresActivites.addMouseListener(new Ecouteur());
+        tableauActivites.addMouseMotionListener(new Ecouteur());
+        tableauAutresActivites.addMouseMotionListener(new Ecouteur());
     }
 
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener {
+    // classe interne
+    private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener {
         
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -140,44 +175,52 @@ public class VueDetailProjet extends JPanel {
             if (e.getSource() == labelRetour) {
                 personne.notifyObservateurs("retour");  
             } 
+            
+            // s'il double clique sur le tableau du haut
             else if ((e.getSource() == tableauActivites) && (e.getClickCount() == 2)) {
+                
+                // on récupère les coordonnées de quelle case il a cliqué
                 int ligne = tableauActivites.rowAtPoint(e.getPoint());
                 int colonne = tableauActivites.columnAtPoint(e.getPoint());
+                
                 // s'il a cliqué sur la première colonne (nom du projet) et que la cellule n'est pas vide
                 if ((colonne == 0) &&(tableauActivites.getValueAt(ligne, 0) != null)) {
                     
+                    // on balaye la liste des activités pour voir celle qui correspond à celle cliquée
                     for (Activity i : personne.getProjetEnCours().getActivities()) { 
                         if (i.getResume().equals((String)(tableauActivites.getValueAt(ligne, 0)))) {
                             personne.getProjetEnCours().setActiviteEnCours(i);
                         }
                     }
                     
+                    // on ouvre le détail de l'activité (elle est modifiable)
                     personne.notifyObservateurs("ouvreActivite");
                 }
             }
+            
+            // s'il double clique sur le tableau du bas
             else if ((e.getSource() == tableauAutresActivites) && (e.getClickCount() == 2)) {
+                
+                // on récupère les coordonnées de quelle case il a cliqué
                 int ligne = tableauAutresActivites.rowAtPoint(e.getPoint());
                 int colonne = tableauAutresActivites.columnAtPoint(e.getPoint());
+                
                 // s'il a cliqué sur la première colonne (nom du projet) et que la cellule n'est pas vide
                 if ((colonne == 0) &&(tableauAutresActivites.getValueAt(ligne, 0) != null)) {
                     
+                    // on balaye la liste des activités pour voir celle qui correspond à celle cliquée
                     for (Activity i : personne.getProjetEnCours().getActivities()) { 
                         if (i.getResume().equals((String)(tableauAutresActivites.getValueAt(ligne, 0)))) {
                             personne.getProjetEnCours().setActiviteEnCours(i);
                         }
                     }
                     
+                    // on ouvre le détail de l'activité (en lecture seulement)
                     personne.notifyObservateurs("ouvreActiviteLecture");
                 }
             }
         }
     
-        @Override public void actionPerformed(ActionEvent e) {}
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseDragged(MouseEvent e) {}
-        
         @Override 
         public void mouseExited(MouseEvent e) {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -185,23 +228,31 @@ public class VueDetailProjet extends JPanel {
     
         @Override
         public void mouseMoved(MouseEvent e) {
-            if ((tableauAutresActivites.columnAtPoint(e.getPoint())) == 0 && (tableauAutresActivites.getValueAt(tableauAutresActivites.rowAtPoint(e.getPoint()), 0) != null)) {
+            
+            // on met un curseur en forme de main lorsqu'il survole une activité
+            
+            if ((tableauAutresActivites.columnAtPoint(e.getPoint())) == 0 
+                    && (tableauAutresActivites.getValueAt(tableauAutresActivites.rowAtPoint(e.getPoint()), 0) != null)) {
                 tableauAutresActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-            else {
+            } else {
                 tableauAutresActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                
             }
+            
             if ((tableauActivites.columnAtPoint(e.getPoint())) == 0 && (tableauActivites.getValueAt(tableauActivites.rowAtPoint(e.getPoint()), 0) != null)) {
                 tableauActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-            else {
+            } else {
                 tableauActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
+        
+        @Override public void actionPerformed(ActionEvent e) {}
+        @Override public void mousePressed(MouseEvent e) {}
+        @Override public void mouseReleased(MouseEvent e) {}
+        @Override public void mouseEntered(MouseEvent e) {}
+        @Override public void mouseDragged(MouseEvent e) {}
     }
 
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         labelImageBas = new JLabel();

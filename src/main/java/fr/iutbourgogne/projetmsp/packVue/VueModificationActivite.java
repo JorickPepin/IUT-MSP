@@ -32,46 +32,67 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import java.sql.Date;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
- *
+ * Classe représentant la vue de modification d'une activité
+ * 
  * @author Jorick
  */
 public class VueModificationActivite extends JPanel {
     
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
     
+    /**
+     * Attribut contenant la date de début de l'activité
+     */
     private JDatePickerImpl dateDebut;
+    
+    /**
+     * Attribut contenant la date de fin de l'activité
+     */
     private JDatePickerImpl dateFin;
     
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur
+     */
     public VueModificationActivite(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 400));
         
+        // ajout des composants
         initComponents();
         
-        labelAnnule.addMouseListener(new Ecouteur_AccesReponse());
+        // ajout des listener
+        addListener();
         
+        // on ajoute les informations de l'activité
         labelNom.setText(personne.getProjetEnCours().getActiviteEnCours().getResume());
         details.setText(personne.getProjetEnCours().getActiviteEnCours().getDetail());
-        type.setText(personne.getProjetEnCours().getActiviteEnCours().getType());
-        
-        boutonValidation.addActionListener(new Ecouteur_AccesReponse());     
-        boutonValidation.addMouseListener(new Ecouteur_AccesReponse());
-        boutonValidation.addMouseMotionListener(new Ecouteur_AccesReponse());
+        type.setText(personne.getProjetEnCours().getActiviteEnCours().getType()); 
     }
     
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener {
+    private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener {
         
         @Override
         public void actionPerformed(ActionEvent e) {
+            
+            // si l'utilisateur clique sur "enregistrer"
             if (e.getSource() == boutonValidation){
                 VueModificationActivite.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 
+                // on met à jour le détail de l'activité
                 personne.getProjetEnCours().getActiviteEnCours().setDetail(details.getText());
                 ActivityDAO.updateActivityDetail(personne.getProjetEnCours().getActiviteEnCours().getId(), details.getText());
                 
+                // on met à jour le statut de l'activité suivant le bouton selectionné
                 switch (buttonSelected()) {
                     case "en cours":
                         personne.getProjetEnCours().getActiviteEnCours().setStatut("en cours");
@@ -91,6 +112,7 @@ public class VueModificationActivite extends JPanel {
                         break;
                 }
                 
+                // on met à jour la date de début de l'activité si elle est renseignée
                 if (dateDebut.getModel().getValue() != null) {
                     int monthD = dateDebut.getModel().getMonth();
                     int dayD = dateDebut.getModel().getDay();
@@ -107,6 +129,7 @@ public class VueModificationActivite extends JPanel {
                     ActivityDAO.updateActivityDateDebut(personne.getProjetEnCours().getActiviteEnCours().getId(), jsqlD);
                 }
                 
+                // on met à jour la date de fin de l'activité si elle est renseignée
                 if (dateFin.getModel().getValue() != null) {
                     int monthF = dateFin.getModel().getMonth();
                     int dayF = dateFin.getModel().getDay();
@@ -123,24 +146,23 @@ public class VueModificationActivite extends JPanel {
                     ActivityDAO.updateActivityDateFin(personne.getProjetEnCours().getActiviteEnCours().getId(), jsqlF);
                 }
                 
-                personne.notifyObservateurs("confirmation");
+                // fenêtre de confirmation
+                JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées.", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
+                
+                // on retourne à la vue d'affiche du détail de l'activité
                 personne.notifyObservateurs("ouvreActivite");
             }
-        
         } 
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            
+            // si l'utilisateur clique sur "annuler"
             if (e.getSource() == labelAnnule) {
-                personne.notifyObservateurs("validation");  
-            } 
+                creationFenetreAnnulation();
+            }
         }
     
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseDragged(MouseEvent e) {}
-        
         @Override 
         public void mouseExited(MouseEvent e) {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -152,8 +174,27 @@ public class VueModificationActivite extends JPanel {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         }
+        
+        @Override public void mousePressed(MouseEvent e) {}
+        @Override public void mouseReleased(MouseEvent e) {}
+        @Override public void mouseEntered(MouseEvent e) {}
+        @Override public void mouseDragged(MouseEvent e) {}
     }
     
+    /**
+     * Méthode permettant d'ajouter les listener dans le constructeur
+     */
+    private void addListener() {
+        labelAnnule.addMouseListener(new Ecouteur());
+        boutonValidation.addActionListener(new Ecouteur());     
+        boutonValidation.addMouseListener(new Ecouteur());
+        boutonValidation.addMouseMotionListener(new Ecouteur());
+    }
+    
+    /**
+     * Méthode permettant de savoir quel boutton est selectionné
+     * @return le statut de l'activité qui est selectionné
+     */
     private String buttonSelected() {
         String result = ""; 
         
@@ -173,9 +214,19 @@ public class VueModificationActivite extends JPanel {
         return result;
     }
     
+    /**
+     * Méthode permettant de créer la fenêtre lorsque l'utilisateur clique sur "annuler"
+     */
+    private void creationFenetreAnnulation() {
+        UIManager.put("OptionPane.yesButtonText", "Oui");
+        UIManager.put("OptionPane.noButtonText", "Non");
 
-
-    @SuppressWarnings("unchecked")
+        int reply = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir annuler ?", "Confirmation", JOptionPane.YES_NO_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+            personne.notifyObservateurs("retourModification");
+        }
+    }
+    
     private void initComponents() {
 
         boutonValidation = new JButton();

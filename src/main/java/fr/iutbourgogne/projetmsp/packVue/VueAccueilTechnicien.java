@@ -24,32 +24,50 @@ import fr.iutbourgogne.projetmsp.packModele.Projet;
 import fr.iutbourgogne.projetmsp.packModele.ProjetDAO;
 
 /**
- *
+ * Classe représentant la vue d'accueil (post authentification) pour un technicien
+ * 
  * @author Jorick
  */
 public class VueAccueilTechnicien extends JPanel {
 
+    /**
+     * Attribut représentant la personne qui s'est connectée
+     */
     private User personne;
 
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur
+     */
     public VueAccueilTechnicien(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 450));
+        
+        // ajout des composants
         initComponents();
         
+        // on remplace le texte sur label en ajoutant le nom et prénom du technicien
         labelBienvenue.setText("Bienvenue " + personne.getPrenom() + " " + personne.getNom());
         
-        labelDeco.addMouseListener(new Ecouteur_AccesReponse());
-        labelChangeMdp.addMouseListener(new Ecouteur_AccesReponse());
-        tableauProjets.addMouseListener(new Ecouteur_AccesReponse());
-        tableauProjets.addMouseMotionListener(new Ecouteur_AccesReponse());
+        // ajout des listener
+        labelDeco.addMouseListener(new Ecouteur());
+        labelChangeMdp.addMouseListener(new Ecouteur());
+        tableauProjets.addMouseListener(new Ecouteur());
+        tableauProjets.addMouseMotionListener(new Ecouteur());
         
+        // remplissage du tableau avec la liste des projets
         Remplir_tableau();
     }
 
+    /**
+     * Méthode permettant de remplir le tableau contenant la liste des projets
+     */
     private void Remplir_tableau() {
         
-        int j = 0, k = 0, l = 0, m = 0;
+        // index de la ligne du tableau
+        int j = 0;
         
         tableauProjets.getTableHeader().setReorderingAllowed(false);
         tableauProjets.getTableHeader().setResizingAllowed(false);
@@ -63,28 +81,36 @@ public class VueAccueilTechnicien extends JPanel {
             tableauProjets.setValueAt(i.getDureeEstimee(), j, 1);
             tableauProjets.setValueAt(i.getDureeFinale(), j, 2);
             tableauProjets.setValueAt(i.getStatut(), j, 3);
+            
+            // on passe à la ligne suivante
             j += 1;
         } 
     }
     
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener, MouseMotionListener {
-        
-        @Override public void actionPerformed(ActionEvent e) {}
+    // classe interne
+    private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener {
        
         @Override
         public void mouseClicked(MouseEvent e) {
+            
             // si utilisateur clique sur déconnexion
             if (e.getSource() == labelDeco) {
                 personne.notifyObservateurs("deconnexion");  
-                // si utilisateur clique sur changement de mdp
+                
+            // si utilisateur clique sur changement de mdp
             } else if (e.getSource() == labelChangeMdp) {
                 personne.notifyObservateurs("changeMdp");  
-                // si utilisateur double-clique sur le tableau
+                
+            // si utilisateur double-clique sur le tableau
             } else if ((e.getSource() == tableauProjets) && (e.getClickCount() == 2)) {
+                
+                // on récupère la ligne et la colonne sur lesquelles il a cliqué pour avoir la case
                 int ligne = tableauProjets.rowAtPoint(e.getPoint());
                 int colonne = tableauProjets.columnAtPoint(e.getPoint());
+                
                 // s'il a cliqué sur la première colonne (nom du projet) et que la cellule n'est pas vide
                 if ((colonne == 0) && (tableauProjets.getValueAt(ligne, 0) != null)) {
+                    
                     // on parcourt la liste des projets pour trouver celui qui correspond à celui sur lequel l'utilisateur a cliqué
                     for (Projet i : personne.getListeProjets()) { 
                         if (i.getNom().equals((String)(tableauProjets.getValueAt(ligne, 0)))) {
@@ -96,11 +122,6 @@ public class VueAccueilTechnicien extends JPanel {
             }
         }
     
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseDragged(MouseEvent e) {}
-        
         @Override 
         public void mouseExited(MouseEvent e) {
             tableauProjets.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -108,16 +129,22 @@ public class VueAccueilTechnicien extends JPanel {
         
         @Override
         public void mouseMoved(MouseEvent e) {
-            if ((tableauProjets.columnAtPoint(e.getPoint())) == 0 && (tableauProjets.getValueAt(tableauProjets.rowAtPoint(e.getPoint()), 0) != null)) {
+            if ((tableauProjets.columnAtPoint(e.getPoint())) == 0 
+                    && (tableauProjets.getValueAt(tableauProjets.rowAtPoint(e.getPoint()), 0) != null)) {
                 tableauProjets.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
             else {
                 tableauProjets.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
+        
+        @Override public void actionPerformed(ActionEvent e) {}
+        @Override public void mousePressed(MouseEvent e) {}
+        @Override public void mouseReleased(MouseEvent e) {}
+        @Override public void mouseEntered(MouseEvent e) {}
+        @Override public void mouseDragged(MouseEvent e) {}
     }
-    
-    @SuppressWarnings("unchecked")                      
+
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -130,56 +157,56 @@ public class VueAccueilTechnicien extends JPanel {
         jSeparator1 = new JSeparator();
         tableauProjets = new JTable();
         jScrollPane1 = new JScrollPane();
-        
+ 
         setBackground(new Color(255, 255, 255));
-        
+
         labelImageBas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bandeau_bas.jpg")));
-        
-        labelBienvenue.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        labelBienvenue.setFont(new java.awt.Font("Tahoma", 0, 18));
         labelBienvenue.setHorizontalAlignment(SwingConstants.CENTER);
         labelBienvenue.setText("Bienvenue Nom de la personne");
-        
+
         labelRole.setHorizontalAlignment(SwingConstants.CENTER);
         labelRole.setText("Vous êtes connecté en tant que Technicien");
 
-        labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11));
         labelDeco.setForeground(new java.awt.Color(204, 204, 204));
         labelDeco.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelDeco.setText("Déconnexion ");
         labelDeco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         labelChangeMdp.setForeground(new java.awt.Color(204, 204, 204));
         labelChangeMdp.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelChangeMdp.setText("Changer le mot de passe");
         labelChangeMdp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        
-        labelListe.setFont(new Font("Tahoma", 0, 14)); 
+
+        labelListe.setFont(new Font("Tahoma", 0, 14));
         labelListe.setHorizontalAlignment(SwingConstants.LEFT);
         labelListe.setText("Liste des projets");
-        
+
         labelPrecision.setHorizontalAlignment(SwingConstants.CENTER);
         labelPrecision.setText("Cliquez sur le nom du projet pour voir les activités qu'il contient");
 
-                tableauProjets.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Nom du projet", "Durée estimée", "Durée finale", "Statut"
-            }
-        ){
+        tableauProjets.setModel(new DefaultTableModel(
+                new Object[][]{
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null}
+                },
+                new String[]{
+                    "Nom du projet", "Durée estimée", "Durée finale", "Statut"
+                }
+        ) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

@@ -14,45 +14,57 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
- *
+ * Classe représentant la vue d'accueil (post authentification) pour un commercial
+ * 
  * @author Jorick
  */
 public class VueAccueilCommercial extends JPanel {
 
+    /**
+     * Attribut représentant la personne qui s'est connectée
+     */
     private User personne;
 
+    /**
+     * Constructeur de la vue
+     * @param p = l'utilisateur
+     */
     public VueAccueilCommercial(User p) {
         this.personne = p;
         
+        // dimensions de la vue
         this.setPreferredSize(new Dimension(500, 500));
+        
+        // ajout des componsants
         initComponents();
         
+        // on remplace le texte sur label en ajoutant le nom et prénom du commercial
         labelBienvenue.setText("Bienvenue " + this.personne.getPrenom() + " " + this.personne.getNom());
         
-        labelDeco.addMouseListener(new Ecouteur_AccesReponse());
-        labelChangeMdp.addMouseListener(new Ecouteur_AccesReponse());
+        // ajout des listener
+        labelDeco.addMouseListener(new Ecouteur());
+        labelChangeMdp.addMouseListener(new Ecouteur());
     }
 
-    public class Ecouteur_AccesReponse implements ActionListener, MouseListener {
+    // classe interne
+    private class Ecouteur implements ActionListener, MouseListener {
         
-        @Override public void actionPerformed(ActionEvent e) {}
-       
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getSource() == labelDeco) {
+            if (e.getSource() == labelDeco) {              // il clique sur "déconnexion"
                 personne.notifyObservateurs("deconnexion");  
-            } else if (e.getSource() == labelChangeMdp) {
+            } else if (e.getSource() == labelChangeMdp) {  // il clique sur "changer mdp"
                 personne.notifyObservateurs("changeMdp");  
             }
         }
-    
+        
+        @Override public void actionPerformed(ActionEvent e) {}
         @Override public void mousePressed(MouseEvent e) {}
         @Override public void mouseReleased(MouseEvent e) {}
         @Override public void mouseEntered(MouseEvent e) {}
         @Override public void mouseExited(MouseEvent e) {} 
     }
-    
-    @SuppressWarnings("unchecked")                      
+                        
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -67,7 +79,7 @@ public class VueAccueilCommercial extends JPanel {
         
         labelImageBas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bandeau_bas.jpg")));
 
-        labelBienvenue.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        labelBienvenue.setFont(new java.awt.Font("Tahoma", 0, 18)); 
         labelBienvenue.setHorizontalAlignment(SwingConstants.CENTER);
         labelBienvenue.setText("Bienvenue Nom de la personne");
         
@@ -80,13 +92,13 @@ public class VueAccueilCommercial extends JPanel {
         labelNoContent.setHorizontalAlignment(SwingConstants.CENTER);
         labelNoContent.setText("Aucune action disponible pour le moment");
 
-        labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         labelDeco.setForeground(new java.awt.Color(204, 204, 204));
         labelDeco.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelDeco.setText("Déconnexion ");
         labelDeco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         labelChangeMdp.setForeground(new java.awt.Color(204, 204, 204));
         labelChangeMdp.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelChangeMdp.setText("Changer le mot de passe");

@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
@@ -26,28 +27,49 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
-
+/**
+ * Classe représentant la vue d'identification
+ * 
+ * @author Jorick
+ */
 public class VueAuth extends JPanel {
     
+    /**
+     * Attribut représentant l'utilisateur
+     */
     private User personne;
     
     public VueAuth(User p) {
         this.personne = p;
+        
+        // ajout des composants
         initComponents();
+        
+        // ajout des listener
         addListener();
     }
     
     // Classe interne, interception de la connexion
-    public class Ecouteur_Connexion implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
+    private class Ecouteur_Connexion implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
         
         @Override
         public void actionPerformed(ActionEvent e) {
             
+            // si l'utilisateur clique sur le bouton "connexion"
             if (e.getSource() == boutonConnexion){
                 connexion();
             }
         }
 
+        @Override
+        public void keyPressed(KeyEvent e) {
+            
+            // si l'utilisateur appuie sur la touche "entrée"
+            if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                connexion();
+            }
+        }
+        
         @Override 
         public void mouseExited(MouseEvent e) {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -57,13 +79,6 @@ public class VueAuth extends JPanel {
         public void mouseMoved(MouseEvent e) {
             if (e.getComponent() == boutonConnexion) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-        }
-        
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode()==KeyEvent.VK_ENTER){
-                connexion();
             }
         }
         
@@ -78,41 +93,62 @@ public class VueAuth extends JPanel {
     
     
     /**
-     * Méthode contenant toutes les actions effectuées lorsque l'utilisateur clique sur boutonConnexion
+     * Méthode contenant toutes les actions effectuées lorsque l'utilisateur 
+     * clique sur boutonConnexion ou sur la touche entrée
      */
     private void connexion() {
         VueAuth.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        // liste contenant le login et le mot de passe
         ArrayList<String> identifiants = new ArrayList();
 
+        // on ajoute le login qu'il a rentré
         identifiants.add(champPseudo.getText());
+        
+        // on ajoute le mot de passe qu'il a rentré
         identifiants.add(String.valueOf(champPassword.getPassword()));
 
-        User user1 = UserDAO.findWithLogin(identifiants.get(0));
+        // on lance une recherche dans la bdd pour trouver l'utilisateur 
+        // correspondant au login entré
+        User user = UserDAO.findWithLogin(identifiants.get(0));
         
-        user1.addObservateur((Observateur) SwingUtilities.getWindowAncestor(VueAuth.this));
+        user.addObservateur((Observateur) SwingUtilities.getWindowAncestor(VueAuth.this));
         
+        // création de la bordure rouge pour l'appliquer quand nécessaire
         Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
 
-        // échec
-        if (user1.getLogin().equals("error")) {
-            personne = user1;
-            personne.notifyObservateurs("connexionEchec");
+        // échec : le login de la personne créée vaut "error", c'est que le login n'a
+        // pas été trouvé dans la base données
+        if (user.getLogin().equals("error")) {
+            personne = user;
+            
+            JOptionPane.showMessageDialog(null, "Le nom d'utilisateur ou le mot de passe est incorrect.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
 
+            // la bordure des champs devient rouge
             champPseudo.setBorder(borderRed);
             champPassword.setBorder(borderRed);
-        } // succes
-        else if (identifiants.get(0).equals(user1.getLogin())
-                && identifiants.get(1).equals(user1.getPassword())) {
-            personne = user1;
+            
+        } 
+
+        // échec : l'identifiant est bon mais pas le mot de passe
+        else if (identifiants.get(0).equals(user.getLogin())
+                && !identifiants.get(1).equals(user.getPassword())) {
+            personne = user;
+            
+            JOptionPane.showMessageDialog(null, "Le nom d'utilisateur ou le mot de passe est incorrect.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
+            
+            // la bordure des champs devient rouge
+            champPseudo.setBorder(borderRed);
+            champPassword.setBorder(borderRed);
+        }
+        
+        // succès : l'identifiant et le mot de passe sont corrects
+        else if (identifiants.get(0).equals(user.getLogin())
+                && identifiants.get(1).equals(user.getPassword())) {
+            personne = user;
+            
+            // on avertit que la connexion a réussi
             personne.notifyObservateurs("connexionSuccess");
-        } // échec
-        else if (identifiants.get(0).equals(user1.getLogin())
-                && !identifiants.get(1).equals(user1.getPassword())) {
-            personne = user1;
-            personne.notifyObservateurs("connexionEchec");
-
-            champPseudo.setBorder(borderRed);
-            champPassword.setBorder(borderRed);
         }
 
         VueAuth.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -134,7 +170,6 @@ public class VueAuth extends JPanel {
         return personne;
     }
    
-    @SuppressWarnings("unchecked")
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -226,9 +261,9 @@ public class VueAuth extends JPanel {
                         .addComponent(labelAvertissement)
                         .addGap(46, 46, 46)
                         .addComponent(labelImageBas, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-        );
-        
+        );  
     }
+    
     private javax.swing.JButton boutonConnexion;
     private javax.swing.JLabel labelUtilisateur;
     private javax.swing.JLabel labelImageBas;
