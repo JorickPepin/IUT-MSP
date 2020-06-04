@@ -1,6 +1,7 @@
 package fr.iutbourgogne.projetmsp.packVue;
 
 import fr.iutbourgogne.projetmsp.packModele.User;
+import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 
@@ -37,7 +38,10 @@ public class Fenetre extends JFrame implements Observateur {
         this.setLocationRelativeTo(null); // permet de centrer la vue
         this.setVisible(true);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
+         
+        // permet de changer l'icone de la fenêtre
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/img/display.png")));
+
         // permet d'enlever les tool tips (= des instructions dans des rectangles lorsque le curseur 
         // passe sur certains éléments et qui sont affichées même si vides)
         ToolTipManager.sharedInstance().setEnabled(false);
