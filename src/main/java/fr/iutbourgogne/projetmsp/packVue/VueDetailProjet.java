@@ -86,6 +86,8 @@ public class VueDetailProjet extends JPanel {
         for (Activity i : personne.getProjetEnCours().getActivities()) {
             if(i.getIdTechnicien() == personne.getId()) {
                 personne.addActivite(i);
+                
+                // on ajoute une ligne avec deux colonnes contenant les informations
                 model.addRow(new Object[]{i.getResume(), i.getStatut()});
                 
                 // on colorie la case du statut
@@ -113,7 +115,7 @@ public class VueDetailProjet extends JPanel {
         ActivityDAO.findActivities(personne.getProjetEnCours());
 
         // récupération du modèle du tableau
-        DefaultTableModel model = (DefaultTableModel) tableauActivites.getModel();
+        DefaultTableModel model = (DefaultTableModel) tableauAutresActivites.getModel();
         
         // on balaye les activités du projet
         for (Activity i : personne.getProjetEnCours().getActivities()) {
@@ -149,7 +151,7 @@ public class VueDetailProjet extends JPanel {
                 // on l'ajoute à la liste pour les tests
                 listeAutresActivites.add(i);
                 
-                // on remplit les colonnes
+                // on ajoute une ligne avec deux colonnes contenant les informations
                 model.addRow(new Object[]{i.getResume(), i.getStatut()});
                 
                 // on colorie la case du statut
