@@ -22,6 +22,12 @@ import javax.swing.table.DefaultTableModel;
 import fr.iutbourgogne.projetmsp.packModele.User;
 import fr.iutbourgogne.projetmsp.packModele.Projet;
 import fr.iutbourgogne.projetmsp.packModele.ProjetDAO;
+import java.awt.Component;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  * Classe représentant la vue d'accueil (post authentification) pour un technicien
@@ -59,6 +65,8 @@ public class VueAccueilTechnicien extends JPanel {
         
         // remplissage du tableau avec la liste des projets
         Remplir_tableau();
+        
+        
     }
 
     /**
@@ -70,23 +78,24 @@ public class VueAccueilTechnicien extends JPanel {
         int j = 0;
         
         tableauProjets.getTableHeader().setReorderingAllowed(false);
-        tableauProjets.getTableHeader().setResizingAllowed(false);
+        tableauProjets.getTableHeader().setResizingAllowed(true);
         
         // récupère les projets du technicien via la requête SQL
         ProjetDAO.findProjets(personne);
       
+        // récupération du modèle du tableau
+        DefaultTableModel model = (DefaultTableModel) tableauProjets.getModel();
+ 
         // remplissage des colonnes
         for (Projet i : personne.getListeProjets()) {
-            tableauProjets.setValueAt(i.getNom(), j, 0);
-            tableauProjets.setValueAt(i.getDureeEstimee(), j, 1);
-            tableauProjets.setValueAt(i.getDureeFinale(), j, 2);
-            tableauProjets.setValueAt(i.getStatut(), j, 3);
+            model.addRow(new Object[]{i.getNom(), i.getDureeEstimee(), i.getDureeFinale(), i.getStatut()});
             
-            // on passe à la ligne suivante
-            j += 1;
+            // on colorie la case du statut
+            tableauProjets.setDefaultRenderer(Object.class, new CustomRenderer());
         } 
+        
     }
-    
+
     // classe interne
     private class Ecouteur implements ActionListener, MouseListener, MouseMotionListener {
        
@@ -145,6 +154,39 @@ public class VueAccueilTechnicien extends JPanel {
         @Override public void mouseDragged(MouseEvent e) {}
     }
 
+    /**
+     * Classe interne permettant de colorier la cellule contenant le statut
+     */
+    class CustomRenderer extends DefaultTableCellRenderer {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+          
+            if (value != null) {
+                switch (value.toString()) {
+                    case "fini":
+                        c.setBackground(new Color(0, 255, 0, 30));
+                        break;
+                    case "en cours":
+                        c.setBackground(new Color(0, 0, 255, 30));
+                        break;
+                    case "annulé":
+                        c.setBackground(new Color(255, 0, 0, 30));
+                        break;
+                    case "en attente":
+                        c.setBackground(new Color(255, 255, 0, 80));
+                        break;
+                    default:
+                        c.setBackground(Color.WHITE);
+                        break;
+                }
+            }
+            
+            return c;
+        }
+    }
+    
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -189,20 +231,7 @@ public class VueAccueilTechnicien extends JPanel {
         labelPrecision.setText("Cliquez sur le nom du projet pour voir les activités qu'il contient");
 
         tableauProjets.setModel(new DefaultTableModel(
-                new Object[][]{
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null},
-                    {null, null, null, null}
-                },
+                new Object[][]{},
                 new String[]{
                     "Nom du projet", "Durée estimée", "Durée finale", "Statut"
                 }
@@ -213,9 +242,13 @@ public class VueAccueilTechnicien extends JPanel {
             }
         });
         
-        tableauProjets.setSelectionBackground(new Color(255, 204, 0));
+        tableauProjets.setSelectionBackground(Color.WHITE);
         tableauProjets.setSelectionForeground(new Color(0, 0, 0));
-        tableauProjets.getColumnModel().getColumn(0).setPreferredWidth(151);
+        tableauProjets.getColumnModel().getColumn(0).setPreferredWidth(140);
+        tableauProjets.getColumnModel().getColumn(1).setPreferredWidth(80);
+        tableauProjets.getColumnModel().getColumn(3).setPreferredWidth(50);
+        tableauProjets.setAutoCreateRowSorter(true);
+        tableauProjets.getTableHeader().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         jScrollPane1.setViewportView(tableauProjets);
         
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
