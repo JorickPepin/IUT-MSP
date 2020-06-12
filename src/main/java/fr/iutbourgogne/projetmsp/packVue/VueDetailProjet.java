@@ -5,6 +5,7 @@ import fr.iutbourgogne.projetmsp.packModele.Activity;
 import fr.iutbourgogne.projetmsp.packModele.ActivityDAO;
 import fr.iutbourgogne.projetmsp.packModele.User;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,6 +23,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -73,18 +75,21 @@ public class VueDetailProjet extends JPanel {
         int j = 0;
         
         tableauActivites.getTableHeader().setReorderingAllowed(false);
-        tableauActivites.getTableHeader().setResizingAllowed(false);
 
         // récupère les activités du projet via la requête SQL
         ActivityDAO.findActivities(personne.getProjetEnCours());
 
+        // récupération du modèle du tableau
+        DefaultTableModel model = (DefaultTableModel) tableauActivites.getModel();
+        
         // remplissage des colonnes
         for (Activity i : personne.getProjetEnCours().getActivities()) {
             if(i.getIdTechnicien() == personne.getId()) {
                 personne.addActivite(i);
-                tableauActivites.setValueAt(i.getResume(), j, 0);
-                tableauActivites.setValueAt(i.getStatut(), j, 1);
-                j += 1;
+                model.addRow(new Object[]{i.getResume(), i.getStatut()});
+                
+                // on colorie la case du statut
+                tableauActivites.setDefaultRenderer(Object.class, new CustomRenderer());
             }
         }
     }
@@ -103,18 +108,18 @@ public class VueDetailProjet extends JPanel {
         ArrayList<Activity> listeAutresActivites = new ArrayList();
         
         tableauAutresActivites.getTableHeader().setReorderingAllowed(false);
-        tableauAutresActivites.getTableHeader().setResizingAllowed(false);
 
         // récupère les autres activités du projet via la requête SQL
         ActivityDAO.findActivities(personne.getProjetEnCours());
 
+        // récupération du modèle du tableau
+        DefaultTableModel model = (DefaultTableModel) tableauActivites.getModel();
+        
         // on balaye les activités du projet
         for (Activity i : personne.getProjetEnCours().getActivities()) {
             
-            // booleen permettant de savoir si une activité est déjà présente dans le tableau du haut
+            // booleens permettant de savoir si une activité est déjà présente dans les tableaux
             boolean estDedans = false;
-            
-            
             boolean dejaPresent = false;
 
             // on balaye les activités du technicien
@@ -145,11 +150,10 @@ public class VueDetailProjet extends JPanel {
                 listeAutresActivites.add(i);
                 
                 // on remplit les colonnes
-                tableauAutresActivites.setValueAt(i.getResume(), j, 0);
-                tableauAutresActivites.setValueAt(i.getStatut(), j, 1);
+                model.addRow(new Object[]{i.getResume(), i.getStatut()});
                 
-                // on passe à la ligne suivante
-                j += 1;
+                // on colorie la case du statut
+                tableauAutresActivites.setDefaultRenderer(Object.class, new CustomRenderer());
             }
         }
     }
@@ -228,21 +232,26 @@ public class VueDetailProjet extends JPanel {
     
         @Override
         public void mouseMoved(MouseEvent e) {
-            
+
             // on met un curseur en forme de main lorsqu'il survole une activité
-            
-            if ((tableauAutresActivites.columnAtPoint(e.getPoint())) == 0 
-                    && (tableauAutresActivites.getValueAt(tableauAutresActivites.rowAtPoint(e.getPoint()), 0) != null)) {
-                tableauAutresActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            } else {
-                tableauAutresActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-               
+            if (tableauAutresActivites.getModel().getRowCount() > 0) { // si le tableau est vide, on ne peut pas effectuer les tests suivants
+                
+                if ((tableauAutresActivites.columnAtPoint(e.getPoint())) == 0
+                        && (tableauAutresActivites.getValueAt(tableauAutresActivites.rowAtPoint(e.getPoint()), 0) != null)) {
+                    tableauAutresActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                } else {
+                    tableauAutresActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+                }
             }
             
-            if ((tableauActivites.columnAtPoint(e.getPoint())) == 0 && (tableauActivites.getValueAt(tableauActivites.rowAtPoint(e.getPoint()), 0) != null)) {
-                tableauActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            } else {
-                tableauActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            if (tableauActivites.getModel().getRowCount() > 0) { // si le tableau est vide, on ne peut pas effectuer les tests suivants
+                
+                if ((tableauActivites.columnAtPoint(e.getPoint())) == 0 && (tableauActivites.getValueAt(tableauActivites.rowAtPoint(e.getPoint()), 0) != null)) {
+                    tableauActivites.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                } else {
+                    tableauActivites.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
             }
         }
         
@@ -253,6 +262,39 @@ public class VueDetailProjet extends JPanel {
         @Override public void mouseDragged(MouseEvent e) {}
     }
 
+    /**
+     * Classe interne permettant de colorier la cellule contenant le statut
+     */
+    class CustomRenderer extends DefaultTableCellRenderer {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+          
+            if (value != null) {
+                switch (value.toString()) {
+                    case "terminée":
+                        c.setBackground(new Color(0, 255, 0, 30));
+                        break;
+                    case "en cours":
+                        c.setBackground(new Color(0, 0, 255, 30));
+                        break;
+                    case "annulée":
+                        c.setBackground(new Color(255, 0, 0, 30));
+                        break;
+                    case "prévue":
+                        c.setBackground(new Color(255, 255, 0, 80));
+                        break;
+                    default:
+                        c.setBackground(Color.WHITE);
+                        break;
+                }
+            }
+            
+            return c;
+        }
+    }
+    
     private void initComponents() {
 
         labelImageBas = new JLabel();
@@ -298,20 +340,7 @@ public class VueDetailProjet extends JPanel {
         labelPrecision2.setText("Cliquez sur le nom de l'activité pour en voir les détails");
 
         tableauActivites.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
+            new Object [][] {},
             new String [] {
                 "Résumé de l'activité", "Statut"
             }
@@ -325,6 +354,8 @@ public class VueDetailProjet extends JPanel {
         tableauActivites.setSelectionBackground(new Color(255, 204, 0));
         tableauActivites.setSelectionForeground(new Color(0, 0, 0));
         tableauActivites.getColumnModel().getColumn(0).setPreferredWidth(300);
+        tableauActivites.setAutoCreateRowSorter(true);
+        tableauActivites.getTableHeader().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         jScrollPane1.setViewportView(tableauActivites);
         
         labelListe2.setFont(new Font("Tahoma", 0, 14)); 
@@ -332,20 +363,7 @@ public class VueDetailProjet extends JPanel {
         labelListe2.setText("Liste des autres activités");
         
         tableauAutresActivites.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
+            new Object [][] {},
             new String [] {
                 "Résumé de l'activité", "Statut"
             }
@@ -359,6 +377,8 @@ public class VueDetailProjet extends JPanel {
         tableauAutresActivites.setSelectionBackground(new Color(255, 204, 0));
         tableauAutresActivites.setSelectionForeground(new Color(0, 0, 0));
         tableauAutresActivites.getColumnModel().getColumn(0).setPreferredWidth(300);
+        tableauAutresActivites.setAutoCreateRowSorter(true);
+        tableauAutresActivites.getTableHeader().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         jScrollPane2.setViewportView(tableauAutresActivites);
         
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

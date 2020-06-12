@@ -138,12 +138,14 @@ public class VueAccueilTechnicien extends JPanel {
         
         @Override
         public void mouseMoved(MouseEvent e) {
-            if ((tableauProjets.columnAtPoint(e.getPoint())) == 0 
-                    && (tableauProjets.getValueAt(tableauProjets.rowAtPoint(e.getPoint()), 0) != null)) {
-                tableauProjets.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-            else {
-                tableauProjets.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+            if (tableauProjets.getModel().getRowCount() > 0) { // si le tableau est vide, on ne peut pas effectuer les tests suivants
+                if ((tableauProjets.columnAtPoint(e.getPoint())) == 0
+                        && (tableauProjets.getValueAt(tableauProjets.rowAtPoint(e.getPoint()), 0) != null)) {
+                    tableauProjets.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                } else {
+                    tableauProjets.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
             }
         }
         
