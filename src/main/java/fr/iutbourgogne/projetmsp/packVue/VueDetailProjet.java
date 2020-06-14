@@ -195,12 +195,17 @@ public class VueDetailProjet extends JPanel {
                     // on balaye la liste des activités pour voir celle qui correspond à celle cliquée
                     for (Activity i : personne.getProjetEnCours().getActivities()) { 
                         if (i.getResume().equals((String)(tableauActivites.getValueAt(ligne, 0)))) {
-                            personne.getProjetEnCours().setActiviteEnCours(i);
+                            personne.getProjetEnCours().setActiviteEnCours(i); 
                         }
                     }
                     
-                    // on ouvre le détail de l'activité (elle est modifiable)
-                    personne.notifyObservateurs("ouvreActivite");
+                    // si le statut du projet est "fini" ou "annulé"
+                    // le technicien ne peut plus modifié les activités
+                    if (personne.getProjetEnCours().getStatut().equals("fini") || personne.getProjetEnCours().getStatut().equals("annulé")) {
+                        personne.notifyObservateurs("ouvreActiviteLecture");
+                    } else { // sinon, il peut les modifier
+                        personne.notifyObservateurs("ouvreActivite");
+                    }
                 }
             }
             
@@ -317,16 +322,15 @@ public class VueDetailProjet extends JPanel {
         
         labelImageBas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bandeau_bas.jpg")));
         
-        labelTitre.setFont(new Font("Tahoma", 0, 14)); // NOI18N
+        labelTitre.setFont(new Font("Tahoma", 0, 14)); 
         labelTitre.setHorizontalAlignment(SwingConstants.CENTER);
         labelTitre.setText("Projet");
 
-        labelNom.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        labelNom.setFont(new Font("Tahoma", 1, 14)); 
         labelNom.setHorizontalAlignment(SwingConstants.CENTER);
         labelNom.setText("[nom_projet]");
 
-        labelRetour.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        labelRetour.setForeground(new java.awt.Color(204, 204, 204));
+        labelRetour.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         labelRetour.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelRetour.setText("Retour");
         labelRetour.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

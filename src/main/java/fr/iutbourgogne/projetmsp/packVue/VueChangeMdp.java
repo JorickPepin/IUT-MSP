@@ -2,6 +2,7 @@ package fr.iutbourgogne.projetmsp.packVue;
 
 import fr.iutbourgogne.projetmsp.packModele.User;
 import fr.iutbourgogne.projetmsp.packModele.UserDAO;
+import fr.iutbourgogne.projetmsp.packModele.Utils;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -106,16 +107,20 @@ public class VueChangeMdp extends JPanel {
                 && champValidationNouveauMdp.getPassword().length != 0) { 
             
             // si le mot de passe rentré correspond au mot de passe actuel
-            if (String.valueOf(champAncienMdp.getPassword()).equals(personne.getPassword())) { 
+            if (String.valueOf(Utils.hashPassWord(String.valueOf(champAncienMdp.getPassword()))).equals(personne.getPassword())) { 
                 
                 // si le nouveau mot de passe et le mot de passe de validation sont identiques
                 if (String.valueOf(champNouveauMdp.getPassword()).equals(String.valueOf(champValidationNouveauMdp.getPassword()))) { 
                     
-                    // si le nouveau mot de passe fait au moins 4 caractères (valeur basse pour faciliter les tests mais modifiable)  
-                    if (String.valueOf(champNouveauMdp.getPassword()).length() > 3) {   
+                    // on vérifie si le mot de passse correspond aux critères donnés dans la classe Utils
+                    if (Utils.isPassWordSafe(String.valueOf(champNouveauMdp.getPassword()))) {   
                         
+                        // on hache le nouveau mot de passe avant de le mettre dans la BDD
+                        String nouveauMDP = String.valueOf(champNouveauMdp.getPassword());
+                        nouveauMDP = Utils.hashPassWord(nouveauMDP);
+                                
                         // on met à jour le mot de passe
-                        personne = UserDAO.updateMdp(String.valueOf(champNouveauMdp.getPassword()), personne);
+                        personne = UserDAO.updateMdp(nouveauMDP, personne);
                         
                         // fenêtre pour avertir du changement
                         JOptionPane.showMessageDialog(null, "Le mot de passe a été modifié.", "Informations correctes", JOptionPane.INFORMATION_MESSAGE);
@@ -210,8 +215,7 @@ public class VueChangeMdp extends JPanel {
         boutonValidation.setBackground(new java.awt.Color(255, 204, 0));
         boutonValidation.setText("Changer le mot de passe");
 
-        labelRetour.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        labelRetour.setForeground(new java.awt.Color(204, 204, 204));
+        labelRetour.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         labelRetour.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelRetour.setText("Retour");
         labelRetour.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

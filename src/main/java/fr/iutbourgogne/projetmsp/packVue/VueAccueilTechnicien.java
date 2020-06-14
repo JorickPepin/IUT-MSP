@@ -214,13 +214,11 @@ public class VueAccueilTechnicien extends JPanel {
         labelRole.setText("Vous êtes connecté en tant que Technicien");
 
         labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11));
-        labelDeco.setForeground(new java.awt.Color(204, 204, 204));
         labelDeco.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelDeco.setText("Déconnexion ");
         labelDeco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); 
-        labelChangeMdp.setForeground(new java.awt.Color(204, 204, 204));
         labelChangeMdp.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelChangeMdp.setText("Changer le mot de passe");
         labelChangeMdp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

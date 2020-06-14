@@ -269,7 +269,6 @@ public class VueModificationActivite extends JPanel {
         labelNom.setText("[nom_activité]");
 
         labelAnnule.setFont(new Font("Tahoma", 1, 11));
-        labelAnnule.setForeground(new Color(204, 204, 204));
         labelAnnule.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelAnnule.setText("Annuler");
         labelAnnule.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

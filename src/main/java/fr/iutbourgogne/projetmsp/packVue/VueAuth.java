@@ -2,6 +2,7 @@ package fr.iutbourgogne.projetmsp.packVue;
 
 import fr.iutbourgogne.projetmsp.packModele.User;
 import fr.iutbourgogne.projetmsp.packModele.UserDAO;
+import fr.iutbourgogne.projetmsp.packModele.Utils;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -116,13 +117,13 @@ public class VueAuth extends JPanel {
         
         // création de la bordure rouge pour l'appliquer quand nécessaire
         Border borderRed = BorderFactory.createLineBorder(Color.RED, 1);
-
+       
         // échec : le login de la personne créée vaut "error", c'est que le login n'a
         // pas été trouvé dans la base données
         if (user.getLogin().equals("error")) {
             personne = user;
             
-            JOptionPane.showMessageDialog(null, "Le nom d'utilisateur ou le mot de passe est incorrect.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Aucun compte n'est enregistré avec ce nom d'utilisateur.", "Information incorrecte", JOptionPane.ERROR_MESSAGE);
 
             // la bordure des champs devient rouge
             champPseudo.setBorder(borderRed);
@@ -130,25 +131,23 @@ public class VueAuth extends JPanel {
             
         } 
 
-        // échec : l'identifiant est bon mais pas le mot de passe
-        else if (identifiants.get(0).equals(user.getLogin())
-                && !identifiants.get(1).equals(user.getPassword())) {
-            personne = user;
-            
-            JOptionPane.showMessageDialog(null, "Le nom d'utilisateur ou le mot de passe est incorrect.", "Informations incorrectes", JOptionPane.ERROR_MESSAGE);
-            
-            // la bordure des champs devient rouge
-            champPseudo.setBorder(borderRed);
-            champPassword.setBorder(borderRed);
-        }
-        
         // succès : l'identifiant et le mot de passe sont corrects
         else if (identifiants.get(0).equals(user.getLogin())
-                && identifiants.get(1).equals(user.getPassword())) {
+                && Utils.hashPassWord(identifiants.get(1)).equals(user.getPassword())) {      
             personne = user;
             
             // on avertit que la connexion a réussi
             personne.notifyObservateurs("connexionSuccess");
+            
+        // échec : l'utilisateur entre le mauvais mot de passe
+        } else {
+            personne = user;
+            
+            JOptionPane.showMessageDialog(null, "Le mot de passe entré est incorrect.", "Information incorrecte", JOptionPane.ERROR_MESSAGE);
+            
+            // la bordure des champs devient rouge
+            champPseudo.setBorder(borderRed);
+            champPassword.setBorder(borderRed);
         }
 
         VueAuth.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

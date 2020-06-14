@@ -193,7 +193,6 @@ public class VueDetailActivite extends JPanel {
         labelNom.setText("[nom_activité]");
 
         labelRetour.setFont(new Font("Tahoma", 1, 11));
-        labelRetour.setForeground(new Color(204, 204, 204));
         labelRetour.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelRetour.setText("Retour");
         labelRetour.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

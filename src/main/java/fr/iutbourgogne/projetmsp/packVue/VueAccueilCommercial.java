@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -93,13 +94,11 @@ public class VueAccueilCommercial extends JPanel {
         labelNoContent.setText("Aucune action disponible pour le moment");
 
         labelDeco.setFont(new java.awt.Font("Tahoma", 1, 11)); 
-        labelDeco.setForeground(new java.awt.Color(204, 204, 204));
         labelDeco.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelDeco.setText("Déconnexion ");
         labelDeco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         labelChangeMdp.setFont(new java.awt.Font("Tahoma", 1, 11)); 
-        labelChangeMdp.setForeground(new java.awt.Color(204, 204, 204));
         labelChangeMdp.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelChangeMdp.setText("Changer le mot de passe");
         labelChangeMdp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
